@@ -33,6 +33,11 @@ function scoreList(players,sort=true,showPoo=false){
   return `<div class="score-list">${list.map((p,i)=>`<div class="score-row ${p.id===state?.me?.id?'me':''}"><span>${showPoo?`${i+1}.`:sort?`${list.findIndex(x=>x.score===p.score)+1}.`:p.answered?'✓':'…'}</span><img src="/assets/clerks/${p.avatar}.webp" alt=""><span class="name">${esc(p.name)}</span><span class="tick">${showPoo?`${p.poo} pushes`:p.answered?'✓ locked':p.streak>1?`🔥${p.streak}`:''}</span><span class="pts">${p.score}</span></div>`).join('')}</div>`;
 }
 function activityHtml(s){return `<section class="activity-panel" aria-label="Live room activity"><h3>📡 Live activity</h3><div class="activity-list">${(s.activity||[]).slice(-5).reverse().map(x=>`<p>${esc(x.message)}</p>`).join('')||'<p>Waiting for the crew…</p>'}</div></section>`;}
+function answerLabel(q,puzzle){
+  const chosen=q.type==='mix'?q.slots.filter((_,i)=>Number.isInteger(selection.slots[i])).length:Number(selection.desc!==null)+Number(selection.condition!==null);
+  const remaining=(q.type==='mix'?q.slots.length:2)-chosen;
+  return remaining?`CHOOSE ${remaining} MORE ${remaining===1?'PART':'PARTS'}`:puzzle?'TRY THIS REPORT 🧩':'LOCK IN REPORT ⚡';
+}
 function patchDynamic(){
   if(!state)return;
   const mute=document.querySelector('.mute[data-action="sound"]');if(mute){mute.textContent=soundOn?'🔊':'🔇';mute.setAttribute('aria-label',soundOn?'Mute sound':'Unmute sound');}
@@ -55,7 +60,7 @@ function patchDynamic(){
       button.disabled=state.phase==='question'&&!!state.me?.answered;
     });
     const lock=document.querySelector('[data-action="answer"]');
-    if(lock){const ready=state.question?.type==='mix'?state.question.slots.every((_,i)=>Number.isInteger(selection.slots[i])):selection.desc!==null&&selection.condition!==null;lock.disabled=(state.phase==='question'&&!!state.me?.answered)||!ready;lock.textContent=state.phase==='puzzle'?'TRY THIS REPORT 🧩':state.me?.answered?'ANSWER LOCKED ✓':'LOCK IN REPORT ⚡';}
+    if(lock){const ready=state.question?.type==='mix'?state.question.slots.every((_,i)=>Number.isInteger(selection.slots[i])):selection.desc!==null&&selection.condition!==null;lock.disabled=(state.phase==='question'&&!!state.me?.answered)||!ready;lock.textContent=state.me?.answered?'ANSWER LOCKED ✓':answerLabel(state.question,state.phase==='puzzle');}
   }
   updateTimer();
 }
@@ -113,13 +118,19 @@ function render(){
     const resultDetail=feedback?`<div class="feedback ${correct?'good':''}">${puzzle?`Solved together · +${mine?.points||0} each`:q.type==='mix'?`+${mine?.points||0} POINTS · ${mine?.count||0}/${q.slots.length} parts right`:`+${mine?.points||0} POINTS · ${line}`}</div><div class="explain"><b>Clerk’s note:</b> ${esc(q.explain)}</div>${!puzzle?`<div class="round-breakdown"><b>Everyone’s round</b>${s.players.map(p=>{const r=s.roundResults?.find(x=>x.id===p.id);return `<div><span>${esc(p.name)}</span><strong>${r?.points?`+${r.points}`:'0'} · ${q.type==='mix'?`${r?.count||0}/${q.slots.length} parts`:r?.desc&&r?.cond?'both right':r?.desc?'description right':r?.cond?'condition right':'no correct parts'}</strong></div>`}).join('')}</div>`:''}<p class="next-cue">${s.round===s.total?'Final results next':`Next: ${puzzle?'puzzle':'round'} ${s.round+1} of ${s.total}`} · <span id="timer"></span>s</p>`:'';
     const attempt=s.me?.lastAttempt;
     const attemptHtml=puzzle&&!feedback&&attempt?`<div class="feedback ${attempt.count===q.slots.length?'good':''}">Your last try: ${attempt.count}/${q.slots.length} parts fit. ${attempt.count===q.slots.length?'Solved!':'Change the highlighted parts and try again.'}</div><div class="part-hints">${q.slots.map((slot,i)=>`<span class="${attempt.hits[i]?'hit':'miss'}">${attempt.hits[i]?'✓':'↺'} ${esc(slot.label)}</span>`).join('')}</div>`:'';
-    app.innerHTML=header+`<section class="screen game-screen"><div class="topline"><span class="pill">${puzzle?'PUZZLE':'ROUND'} ${s.round}/${s.total}</span><span class="pill">${status}</span></div>${puzzle?'':`<div class="progress"><div id="timebar"></div></div>`}<div class="live-strip">${puzzle?`🧩 ${s.players.reduce((n,p)=>n+p.attempts,0)} crew attempts · shared score ${s.players[0]?.score||0}`:`📝 ${reports}/${s.players.length} reports locked`}</div><div class="live-now" aria-live="polite">${esc(s.activity?.at(-1)?.message||'Waiting for the crew…')}</div>${q.scenario?`<div class="scenario"><b>SCENARIO FACTS</b><p>${esc(q.scenario)}</p></div>`:''}<button class="photo-wrap inspect-photo" data-action="inspect" data-image="${q.image}" data-alt="${esc(q.room)} ${esc(q.item)} inspection photo" aria-label="Enlarge ${esc(q.room)} ${esc(q.item)} photo"><img src="${q.image}" alt="${esc(q.room)} ${esc(q.item)} inspection photo"><span class="room-tag">${esc(q.room)}</span><span class="zoom-tag">⌕ Tap to inspect</span></button><h2 class="question-title">${esc(q.prompt)}</h2><p class="small coach">${puzzle?'Pick every part, then compare clues with your friend. A wrong try reveals correct parts to the whole crew.':q.type==='mix'?'Select one option in every row to build a complete report.':q.scenario?'Use the stated facts and visible evidence.':'Use only what this view actually shows.'}</p>${clueHtml}${choices}${!feedback?(s.me?.answered?'<div class="feedback good">Report locked. Watching the crew finish…</div>':`<div class="buttons answer-actions"><button class="button" data-action="answer" ${ready?'':'disabled'}>${puzzle?'TRY THIS REPORT 🧩':'LOCK IN REPORT ⚡'}</button></div>`):resultDetail}${attemptHtml}<h3>${puzzle?'Shared crew score':'Live leaderboard'}</h3>${scoreList(s.players)}${activityHtml(s)}</section>`;
+    app.innerHTML=header+`<section class="screen game-screen"><div class="topline"><span class="pill">${puzzle?'PUZZLE':'ROUND'} ${s.round}/${s.total}</span><span class="pill">${status}</span></div>${puzzle?'':`<div class="progress"><div id="timebar"></div></div>`}<div class="live-strip">${puzzle?`🧩 ${s.players.reduce((n,p)=>n+p.attempts,0)} crew attempts · shared score ${s.players[0]?.score||0}`:`📝 ${reports}/${s.players.length} reports locked`}</div><div class="live-now" aria-live="polite">${esc(s.activity?.at(-1)?.message||'Waiting for the crew…')}</div>${q.scenario?`<div class="scenario"><b>SCENARIO FACTS</b><p>${esc(q.scenario)}</p></div>`:''}<button class="photo-wrap inspect-photo" data-action="inspect" data-image="${q.image}" data-alt="${esc(q.room)} ${esc(q.item)} inspection photo" aria-label="Enlarge ${esc(q.room)} ${esc(q.item)} photo"><img src="${q.image}" alt="${esc(q.room)} ${esc(q.item)} inspection photo"><span class="room-tag">${esc(q.room)}</span><span class="zoom-tag">⌕ Tap to inspect</span></button><h2 class="question-title">${esc(q.prompt)}</h2><p class="small coach">${puzzle?'Pick every part, then compare clues with your friend. A wrong try reveals correct parts to the whole crew.':q.type==='mix'?'Select one option in every row to build a complete report.':q.scenario?'Use the stated facts and visible evidence.':'Use only what this view actually shows.'}</p>${clueHtml}${choices}${!feedback?(s.me?.answered?'<div class="feedback good">Report locked. Watching the crew finish…</div>':`<div class="buttons answer-actions"><button class="button" data-action="answer" ${ready?'':'disabled'}>${answerLabel(q,puzzle)}</button></div>`):resultDetail}${attemptHtml}<h3>${puzzle?'Shared crew score':'Live leaderboard'}</h3>${scoreList(s.players)}${activityHtml(s)}</section>`;
   } else if(s.phase==='poo'){
     const me=s.players.find(p=>p.id===s.me?.id);
     app.innerHTML=header+`<section class="screen"><div class="topline"><span class="pill">🚨 RANDOM WC BREAK</span><span class="pill">⏱ <span id="timer">7.0</span>s</span></div><div class="progress"><div id="timebar"></div></div><h1>THRONE SPRINT</h1><p class="small">The inspection is paused. Tap PUSH faster than the other clerks. The most pushes gets 80 bonus points. Yes, this is in the syllabus now.</p><div class="poo-stage"><div class="wc-sign">FLAT WC · INSPECTION PAUSED</div><div class="poo-emoji">💩</div><div class="toilet">🚽</div><div class="meter"><div style="width:${Math.min(100,(me?.poo||0)/35*100)}%"></div></div><div class="buttons"><button class="button pink" data-action="push">💨 PUSH! ${me?.poo||0}</button></div></div>${scoreList([...s.players].sort((a,b)=>b.poo-a.poo),false,true)}</section>`;
   } else if(s.phase==='results'){
     const rank=[...s.players].sort((a,b)=>b.score-a.score),winner=rank[0],me=rank.findIndex(p=>p.score===rank.find(x=>x.id===s.me?.id)?.score)+1,tied=rank.filter(p=>p.score===winner?.score);
     app.innerHTML=header+`<section class="screen"><div class="winner">${s.mode==='puzzle'?'🧩 PUZZLES SOLVED!':`🏆 ${tied.length>1?`${tied.map(p=>esc(p.name)).join(' & ')} TIE!`:`${esc(winner?.name||'The toilet')} WINS!`}`}</div><h2>${s.mode==='puzzle'?'Crew report complete':s.solo?'Inspection complete':'Final leaderboard'}</h2><p class="small">${s.mode==='puzzle'?`You solved ${s.total} reports together. Shared score: ${winner?.score||0}.`:s.solo?`You scored ${winner?.score||0} points. The clipboard has seen worse.`:`You finished #${me}. The clipboard remembers.`}</p>${scoreList(s.players)}${activityHtml(s)}${s.mode==='puzzle'?'':s.review?.length?`<h2>Missed evidence · ${s.review.length}</h2>${s.review.map(reviewCard).join('')}`:'<p class="note">No missed evidence. Annoyingly competent.</p>'}<div class="buttons">${s.host?`<button class="button" data-action="start">🔁 PLAY AGAIN</button>`:''}<button class="button secondary" data-action="leave">🏠 MAIN MENU</button></div></section>`;
+  }
+  if(s.phase==='results'&&s.solo){
+    const score=s.players[0]?.score||0;
+    const previousBest=Number(localStorage.getItem('im-best')||0);
+    if(score>previousBest)localStorage.setItem('im-best',String(score));
+    document.querySelector('.winner + h2')?.insertAdjacentHTML('afterend',`<p class="personal-best">${score>previousBest?'✨ New personal best!':'🏅 Personal best: '+previousBest}</p>`);
   }
   renderedKey=key;
   updateTimer();
@@ -197,6 +208,12 @@ document.addEventListener('click',async event=>{
     else if(action==='leave'){source?.close();source=null;try{await api('leave',session);}catch{}session=null;invite=null;localStorage.removeItem('im-session');history.replaceState(null,'',location.pathname);home();}
   }catch(error){toast(error.message);}
   finally{busy=false;}
+});
+document.addEventListener('keydown',event=>{
+  if(event.key==='Enter'&&event.target?.id==='join-code'){
+    event.preventDefault();
+    document.querySelector('[data-action="join"]')?.click();
+  }
 });
 setInterval(updateTimer,100);
 restore();
