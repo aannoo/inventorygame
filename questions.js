@@ -49,3 +49,29 @@ export const scenarios = [
   { id:'s9', image:'/assets/photos/6.webp', room:'Kitchen', item:'Wall cupboard', prompt:'What order completes this item?', descLabel:'1 · Report order', conditionLabel:'2 · Missing evidence', scenario:'You photographed this cupboard exterior and open shelves. The cupboard contents have not been checked.', description:['Exterior, interior, then contents','Contents only; exterior can be skipped','Exterior only; open doors prove contents'], condition:['Record the visible interior surfaces, then list and photograph contents found inside','Assume the cupboard is empty from this angle','Call the hidden contents undamaged'], explain:'The supplied cheat sheet uses exterior, interior, contents order. An exterior image alone cannot establish interior condition or contents.' },
   { id:'s10', image:'/assets/photos/33.webp', room:'Hallway', item:'Keys', prompt:'Which key note is complete?', descLabel:'1 · Key record', conditionLabel:'2 · Missing-detail check', scenario:'Fictional scenario: you collected two front-door keys and one entry fob from the concierge, then returned all three to the concierge.', description:['Two front-door keys and one entry fob collected from and returned to concierge','Three keys received and put back somewhere','Front door unlocked; key details unnecessary'], condition:['Count, type, use, and return recipient are stated','The door photo proves how many keys were returned','A key photo alone establishes the recipient'], explain:'The supplied cheat sheet asks for key count, type, use and recipient or return destination. These facts come from the scenario, not the door photo.' }
 ];
+
+// Each slot is a visible part of the report. Correct choices are first and are
+// shuffled for each match, just like the existing question options.
+export const mixQuestions = [
+  { id:'m1', room:'Hallway', item:'Door handle', image:'/assets/photos/33.webp', prompt:'Build the most accurate door handle description.', slots:[
+    {label:'Colour',options:['White','Black','Brown']},
+    {label:'Finish',options:['Painted','Bare timber','Tiled']},
+    {label:'Item',options:['Door','Cupboard','Window']},
+    {label:'Handle finish',options:['Silver-coloured','Brass-coloured','Black']},
+    {label:'Handle type',options:['Lever handle','Round knob','Pull handle']}
+  ], explain:'The photo shows a white painted door with a silver-coloured lever handle. Describe the visible finish rather than assuming the handle is chrome.' },
+  { id:'m2', room:'Bathroom', item:'Wash basin', image:'/assets/photos/16.webp', prompt:'Assemble the visible basin report.', slots:[
+    {label:'Colour',options:['White','Black','Grey']},
+    {label:'Material',options:['Ceramic','Stainless steel','Timber']},
+    {label:'Item',options:['Wash basin','Kitchen sink','Bath']},
+    {label:'Tap finish',options:['Chrome-coloured','Brass-coloured','Black']},
+    {label:'Tap type',options:['Mixer tap','Two separate taps','No tap visible']}
+  ], explain:'A white ceramic basin and chrome-coloured mixer tap are visible. The photo cannot confirm that the tap works.' },
+  { id:'m3', room:'Bedroom', item:'Painted wall', image:'/assets/photos/31.webp', prompt:'Build a precise wall observation.', slots:[
+    {label:'Colour',options:['White','Grey','Blue']},
+    {label:'Surface',options:['Painted','Tiled','Wallpapered']},
+    {label:'Item',options:['Wall','Door','Ceiling']},
+    {label:'Condition',options:['Small dark marks','Large missing plaster area','No marks visible']},
+    {label:'Location',options:['Near the corner','Across the whole wall','On the floor']}
+  ], explain:'Small dark marks are visible on the white painted wall near the corner. Avoid claiming major damage.' }
+];

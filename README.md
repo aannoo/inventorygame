@@ -2,6 +2,8 @@
 
 A phone-first property inventory training game using a curated set of local house photos. Solo play and live multiplayer run in any modern phone browser. No account, database, build step, or third-party service is needed for a local game.
 
+**Live game:** [inventorygame.onrender.com](https://inventorygame.onrender.com/). Open this address on every device for internet multiplayer, then create a room and share its invite link.
+
 ## Start
 
 Install Node.js 20 or newer, then from this folder run:
@@ -28,7 +30,9 @@ For play across separate networks, run this Node server on an internet-reachable
 
 The free service can sleep after 15 minutes without incoming requests and may restart. Its rooms are in memory, so a restart clears them; create a fresh room if that happens. Do not create the room on `localhost` and expect it to appear on Render.
 
-Solo Sprint starts immediately. Each match has ten shuffled photo rounds, two labeled practice scenarios, and two random seven-second WC breaks. Correct descriptions and conditions score points, with speed and streak bonuses. The WC winner gets 80 points. A match supports up to eight players. The results screen shows missed answers with the photo and explanation. **Exit** is available during play; **Restart** begins a fresh solo run or, for a multiplayer host, resets the whole room after confirmation.
+Solo Sprint starts immediately. Classic matches have eight shuffled photo rounds, two labeled practice scenarios, two build-a-report rounds, and two random seven-second WC breaks. Build-a-report rounds ask players to choose each visible detail, such as colour, painted finish, door, handle finish, and handle type. Correct parts score points, with speed and streak bonuses for a complete report. The WC winner gets 80 points. Between rounds, everyone sees a breakdown of each player's points and correct parts, plus a live activity feed and countdown.
+
+**Puzzle with a friend** creates a shared room with three build-a-report puzzles. The host starts after friends join. There is no timer: everyone can try combinations, gets part-by-part feedback after each attempt, and shares any correct clues they uncover with the crew. When anyone solves a puzzle, every player earns the same points and sees the completed report. Rooms support up to eight players. The results screen shows missed classic answers with the photo and explanation. **Exit** is available during play; **Restart** begins a fresh solo run or, for a multiplayer host, resets the whole room after confirmation.
 
 ## Content and limits
 
