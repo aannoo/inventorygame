@@ -1,0 +1,26 @@
+.poo-stage {
+  background-color: #f5f8ff;
+  background-image: linear-gradient(#b5c5dc 2px, transparent 2px), linear-gradient(90deg, #b5c5dc 2px, transparent 2px);
+  background-size: 42px 42px;
+}
+.wc-sign {
+  display: inline-block;
+  background: #ffe159;
+  border: 2px solid #251961;
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: 1px;
+  transform: rotate(-3deg);
+  margin-bottom: 6px;
+}
+.review{display:flex;gap:9px;background:#fff;border:2px solid #302265;border-radius:12px;padding:8px;margin:8px 0;font-size:12px;line-height:1.3}.review img{width:95px;height:95px;object-fit:cover;border-radius:7px}.review p{margin:5px 0}.review small{font-size:11px;color:#534c70}
+.scenario{background:#fff0aa;border:2px solid #302265;border-radius:12px;padding:10px 12px;margin-top:12px;font-size:13px;line-height:1.35}.scenario b{font-size:11px;letter-spacing:1px;color:#6b32ba}.scenario p{margin:4px 0 0;font-weight:750}.coach{margin:5px 0 9px}
+#connection-banner{position:fixed;top:0;left:0;right:0;background:#ffdb4e;color:#241757;text-align:center;padding:8px;z-index:10;font-size:13px;font-weight:900;display:none}#connection-banner.show{display:block}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+.screen,.brand,.game-actions{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.button,.choice,.avatar-choice,.mute,.mini-action,.poo-stage{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.field,.invite-url{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;touch-action:auto}
+.game-actions{display:flex;gap:8px;margin:-4px 0 12px}.mini-action{flex:1;min-height:38px;border:2px solid #281a64;border-radius:10px;background:#fff2ad;color:#281a64;font:900 12px system-ui;cursor:pointer;box-shadow:2px 3px 0 #281a64}.mini-action:active{transform:translateY(2px);box-shadow:0 1px 0 #281a64}
+.invite-qr{display:block;width:min(220px,70vw);height:auto;margin:12px auto;border:4px solid #251a62;border-radius:12px;background:white;padding:7px}.invite-url{font-size:13px;letter-spacing:0}.manual-address{margin:14px 0;background:#eee8ff;border:2px solid #b5a9e1;border-radius:11px;padding:9px}.manual-address summary{font-size:13px;font-weight:900;cursor:pointer}.manual-address .join-row{margin-top:9px}.manual-address .button{font-size:12px;min-width:75px}
